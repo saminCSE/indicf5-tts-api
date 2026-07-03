@@ -4,11 +4,10 @@ import { ConfigService } from '@nestjs/config';
 import { Job as BullJob } from 'bullmq';
 import { MongodbService } from '../database/mongodb/mongodb.service';
 import { JobStatus } from '../database/mongodb/schemas/job.schema';
-import {
-  AUDIO_STORAGE,
-  AudioStorage,
-} from './storage/audio-storage.interface';
-import { TTS_BACKEND, TtsBackend } from './tts-backend/tts-backend.interface';
+import type { AudioStorage } from './storage/audio-storage.interface';
+import { AUDIO_STORAGE } from './storage/audio-storage.interface';
+import type { TtsBackend } from './tts-backend/tts-backend.interface';
+import { TTS_BACKEND } from './tts-backend/tts-backend.interface';
 
 interface TtsJobPayload {
   jobId: string;

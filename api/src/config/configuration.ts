@@ -4,6 +4,7 @@ export interface AppConfig {
   redis: {
     host: string;
     port: number;
+    bullPrefix: string;
   };
   tts: {
     backend: 'mock' | 'real';
@@ -32,6 +33,7 @@ export default (): AppConfig => {
     redis: {
       host: process.env.REDIS_HOST as string,
       port: parseInt(process.env.REDIS_PORT as string, 10),
+      bullPrefix: process.env.BULL_PREFIX ?? 'bull',
     },
     tts: {
       backend,

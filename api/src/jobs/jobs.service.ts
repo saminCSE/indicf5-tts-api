@@ -15,10 +15,8 @@ import { AuthenticatedUser } from '../auth/decorators/current-user.decorator';
 import { MongodbService } from '../database/mongodb/mongodb.service';
 import { JobDocument, JobStatus } from '../database/mongodb/schemas/job.schema';
 import { CreateTtsDto } from './dto/create-tts.dto';
-import {
-  AUDIO_STORAGE,
-  AudioStorage,
-} from './storage/audio-storage.interface';
+import type { AudioStorage } from './storage/audio-storage.interface';
+import { AUDIO_STORAGE } from './storage/audio-storage.interface';
 
 const BENGALI_CHAR_REGEX = /[ঀ-৿]/;
 

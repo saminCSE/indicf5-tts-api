@@ -1,5 +1,6 @@
 process.env.MONGO_URI = 'mongodb://localhost:27017/indicf5-tts-test';
 process.env.TTS_BACKEND = 'mock';
+process.env.BULL_PREFIX = 'bull-test';
 
 import { INestApplication } from '@nestjs/common';
 import { getQueueToken } from '@nestjs/bullmq';
@@ -157,7 +158,7 @@ describe('TTS Jobs (e2e)', () => {
   });
 
   describe('per-user isolation', () => {
-    it('hides another user\'s job behind 404', async () => {
+    it("hides another user's job behind 404", async () => {
       const jobId = await submitJob(keyA);
 
       await request(server)
@@ -171,7 +172,7 @@ describe('TTS Jobs (e2e)', () => {
         .expect(404);
     });
 
-    it('lists only the caller\'s own jobs', async () => {
+    it("lists only the caller's own jobs", async () => {
       await submitJob(keyB);
       const res = await request(server)
         .get('/v1/jobs')

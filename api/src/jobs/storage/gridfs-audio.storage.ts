@@ -20,7 +20,7 @@ export class GridFsAudioStorage implements AudioStorage, OnModuleInit {
   save(buffer: Buffer, filename: string): Promise<Types.ObjectId> {
     return new Promise((resolve, reject) => {
       const upload = this.bucket.openUploadStream(filename, {
-        contentType: 'audio/wav',
+        metadata: { contentType: 'audio/wav' },
       });
       upload.once('error', reject);
       upload.once('finish', () =>

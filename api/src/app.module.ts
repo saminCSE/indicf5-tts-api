@@ -31,6 +31,7 @@ import { HealthController } from './health/health.controller';
           host: config.get<string>('redis.host'),
           port: config.get<number>('redis.port'),
         },
+        prefix: config.get<string>('redis.bullPrefix'),
       }),
     }),
     MongodbModule,
