@@ -50,6 +50,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
       this.logger.error(String(exception));
     }
 
+    if (statusCode === HttpStatus.SERVICE_UNAVAILABLE) {
+      response.setHeader('Retry-After', '30');
+    }
+
     response
       .status(statusCode)
       .json({ success: false, statusCode, message, error });

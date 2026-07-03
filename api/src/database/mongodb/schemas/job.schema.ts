@@ -22,11 +22,17 @@ export class Job {
   @Prop({ required: true })
   charCount!: number;
 
-  @Prop({ type: String, default: null })
-  audioPath!: string | null;
+  @Prop({ type: Types.ObjectId, default: null })
+  audioFileId!: Types.ObjectId | null;
 
   @Prop({ type: String, default: null })
   error!: string | null;
+
+  @Prop({ type: Date, default: null })
+  startedAt!: Date | null;
+
+  @Prop({ type: Date, default: null })
+  finishedAt!: Date | null;
 }
 
 export type JobDocument = HydratedDocument<Job>;

@@ -5,6 +5,13 @@ export interface AppConfig {
     host: string;
     port: number;
   };
+  tts: {
+    backend: 'mock' | 'real';
+    maxChars: number;
+    queueMaxDepth: number;
+    jobTimeoutMs: number;
+    serviceUrl: string;
+  };
 }
 
 export default (): AppConfig => {
@@ -14,12 +21,24 @@ export default (): AppConfig => {
     throw new Error(`Missing required env vars: ${missing.join(', ')}`);
   }
 
+  const backend = process.env.TTS_BACKEND ?? 'mock';
+  if (backend !== 'mock' && backend !== 'real') {
+    throw new Error(`TTS_BACKEND must be 'mock' or 'real', got '${backend}'`);
+  }
+
   return {
     port: parseInt(process.env.PORT ?? '3000', 10),
     mongoUri: process.env.MONGO_URI as string,
     redis: {
       host: process.env.REDIS_HOST as string,
       port: parseInt(process.env.REDIS_PORT as string, 10),
+    },
+    tts: {
+      backend,
+      maxChars: parseInt(process.env.TTS_MAX_CHARS ?? '1000', 10),
+      queueMaxDepth: parseInt(process.env.QUEUE_MAX_DEPTH ?? '100', 10),
+      jobTimeoutMs: parseInt(process.env.JOB_TIMEOUT_MS ?? '120000', 10),
+      serviceUrl: process.env.TTS_SERVICE_URL ?? 'http://localhost:8000',
     },
   };
 };
