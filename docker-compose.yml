@@ -21,5 +21,21 @@ services:
       timeout: 3s
       retries: 5
 
+  tts-model:
+    build: ./worker
+    profiles: ["real"]
+    ports:
+      - "8000:8000"
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+    volumes:
+      - hf-cache:/root/.cache/huggingface
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
 volumes:
   mongo-data:
+  hf-cache:

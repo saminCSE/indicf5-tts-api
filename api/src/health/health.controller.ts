@@ -15,7 +15,14 @@ export class HealthController {
     return {
       status: mongoConnected ? 'ok' : 'degraded',
       mongo: mongoConnected ? 'connected' : 'disconnected',
-      uptime: process.uptime(),
+      uptime: this.formatUptime(process.uptime()),
     };
+  }
+
+  private formatUptime(totalSeconds: number): string {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+    return `${hours}h ${minutes}m ${seconds}s`;
   }
 }

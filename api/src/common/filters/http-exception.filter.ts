@@ -16,7 +16,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const response = host.switchToHttp().getResponse<Response>();
 
-    let statusCode: number = HttpStatus.INTERNAL_SERVER_ERROR;
+    let statusCode: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
     let error = 'Internal Server Error';
 

@@ -7,11 +7,17 @@ export interface AppConfig {
     bullPrefix: string;
   };
   tts: {
-    backend: 'mock' | 'real';
+    backend: 'mock' | 'space' | 'local';
     maxChars: number;
     queueMaxDepth: number;
     jobTimeoutMs: number;
     serviceUrl: string;
+    space: {
+      id: string;
+      refAudioUrl: string;
+      refText: string;
+      hfToken?: string;
+    };
   };
 }
 
@@ -23,8 +29,10 @@ export default (): AppConfig => {
   }
 
   const backend = process.env.TTS_BACKEND ?? 'mock';
-  if (backend !== 'mock' && backend !== 'real') {
-    throw new Error(`TTS_BACKEND must be 'mock' or 'real', got '${backend}'`);
+  if (backend !== 'mock' && backend !== 'space' && backend !== 'local') {
+    throw new Error(
+      `TTS_BACKEND must be 'mock', 'space' or 'local', got '${backend}'`,
+    );
   }
 
   return {
@@ -41,6 +49,16 @@ export default (): AppConfig => {
       queueMaxDepth: parseInt(process.env.QUEUE_MAX_DEPTH ?? '100', 10),
       jobTimeoutMs: parseInt(process.env.JOB_TIMEOUT_MS ?? '120000', 10),
       serviceUrl: process.env.TTS_SERVICE_URL ?? 'http://localhost:8000',
+      space: {
+        id: process.env.HF_SPACE_ID ?? 'ai4bharat/IndicF5',
+        refAudioUrl:
+          process.env.REF_AUDIO_URL ??
+          'https://huggingface.co/ai4bharat/IndicF5/resolve/main/prompts/PAN_F_HAPPY_00001.wav',
+        refText:
+          process.env.REF_TEXT ??
+          'ਭਹੰਪੀ ਵਿੱਚ ਸਮਾਰਕਾਂ ਦੇ ਭਵਨ ਨਿਰਮਾਣ ਕਲਾ ਦੇ ਵੇਰਵੇ ਗੁੰਝਲਦਾਰ ਅਤੇ ਹੈਰਾਨ ਕਰਨ ਵਾਲੇ ਹਨ, ਜੋ ਮੈਨੂੰ ਖੁਸ਼ ਕਰਦੇ ਹਨ।',
+        hfToken: process.env.HF_TOKEN,
+      },
     },
   };
 };
