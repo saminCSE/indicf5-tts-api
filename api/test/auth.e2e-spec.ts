@@ -1,4 +1,5 @@
 process.env.MONGO_URI = 'mongodb://localhost:27017/indicf5-tts-test';
+process.env.RATE_LIMIT_PER_MINUTE = '10000';
 
 import { INestApplication } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';

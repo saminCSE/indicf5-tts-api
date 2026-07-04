@@ -1,5 +1,6 @@
 export interface AppConfig {
   port: number;
+  rateLimitPerMinute: number;
   mongoUri: string;
   redis: {
     host: string;
@@ -37,6 +38,7 @@ export default (): AppConfig => {
 
   return {
     port: parseInt(process.env.PORT ?? '3000', 10),
+    rateLimitPerMinute: parseInt(process.env.RATE_LIMIT_PER_MINUTE ?? '60', 10),
     mongoUri: process.env.MONGO_URI as string,
     redis: {
       host: process.env.REDIS_HOST as string,

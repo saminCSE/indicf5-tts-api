@@ -2,8 +2,10 @@ import { Controller, Get } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection, ConnectionStates } from 'mongoose';
 import { Public } from '../auth/decorators/public.decorator';
+import { SkipRateLimit } from '../common/decorators/skip-rate-limit.decorator';
 
 @Public()
+@SkipRateLimit()
 @Controller('health')
 export class HealthController {
   constructor(@InjectConnection() private readonly connection: Connection) {}
