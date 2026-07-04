@@ -2,7 +2,7 @@ services:
   mongo:
     image: mongo:7
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - mongo-data:/data/db
     healthcheck:
@@ -14,7 +14,7 @@ services:
   redis:
     image: redis:7
     ports:
-      - "6380:6379"
+      - "127.0.0.1:6380:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -25,7 +25,7 @@ services:
     build: ./worker
     profiles: ["real"]
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
       - HF_TOKEN=${HF_TOKEN}
     volumes:
