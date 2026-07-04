@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { ApiDoc } from '../common/decorators/api-doc.decorator';
 import { AuthService } from './auth.service';
 import type { AuthenticatedUser } from './decorators/current-user.decorator';
@@ -17,6 +17,23 @@ export class AuthController {
   @ApiDoc({
     summary: 'Register and receive an API key (shown only once)',
     errors: [400, 409],
+  })
+  @ApiBody({
+    type: RegisterDto,
+    examples: {
+      'valid → 201 (key shown once)': {
+        value: { email: 'reviewer@example.com', name: 'Reviewer' },
+      },
+      'same email again → 409': {
+        value: { email: 'reviewer@example.com', name: 'Duplicate' },
+      },
+      'invalid email → 400': {
+        value: { email: 'not-an-email', name: 'Bad Email' },
+      },
+      'unknown extra field → 400': {
+        value: { email: 'x@example.com', name: 'X', role: 'admin' },
+      },
+    },
   })
   async register(@Body() dto: RegisterDto) {
     const result = await this.authService.register(dto);

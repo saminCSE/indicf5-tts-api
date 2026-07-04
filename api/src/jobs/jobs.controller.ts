@@ -9,7 +9,7 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -28,6 +28,26 @@ export class JobsController {
     summary: 'Submit Bengali text for speech synthesis (async, returns job)',
     auth: true,
     errors: [400, 401, 422, 503],
+  })
+  @ApiBody({
+    type: CreateTtsDto,
+    examples: {
+      'valid Bengali → 202': {
+        value: { text: 'আমার সোনার বাংলা, আমি তোমায় ভালোবাসি।' },
+      },
+      'English only → 422': {
+        value: { text: 'hello world, english only' },
+      },
+      'empty text → 400': {
+        value: { text: '' },
+      },
+      'over 1000 chars → 400': {
+        value: { text: 'আ'.repeat(1001) },
+      },
+      'unknown extra field → 400': {
+        value: { text: 'আমার সোনার বাংলা', voice: 'female' },
+      },
+    },
   })
   async submit(
     @CurrentUser() user: AuthenticatedUser,

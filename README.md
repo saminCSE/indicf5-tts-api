@@ -14,10 +14,18 @@ cd indicf5-tts-api
 docker compose up -d --build
 ```
 
-Open **http://localhost:3000/docs** (Swagger UI) →
-`POST /v1/auth/register` → copy your API key → click **Authorize** → paste → try every endpoint from the browser.
+## 🧭 Test Everything From the Browser (Swagger)
 
-Or with curl:
+Open **http://localhost:3000/docs** — the entire assessment is testable without curl or Postman:
+
+1. `POST /v1/auth/register` → **Try it out** → Execute → copy `data.apiKey` (shown only once)
+2. Click **Authorize** 🔓 (top right) → paste the key → every locked endpoint now works
+3. `POST /v1/tts` → the **Examples dropdown** contains ready-made test cases, happy and unhappy:
+   - `valid Bengali → 202` · `English only → 422` · `empty text → 400` · `over 1000 chars → 400` · `unknown extra field → 400`
+4. Copy the `jobId`, poll `GET /v1/jobs/{id}`, then download the WAV via `GET /v1/jobs/{id}/audio`
+5. Register has its own examples dropdown too (`duplicate email → 409`, `invalid email → 400`, …), and every endpoint documents its error responses with example bodies
+
+Prefer curl:
 
 ```bash
 # 1. Register (key shown ONCE)
