@@ -1,5 +1,7 @@
 # 🎙️ IndicF5 Bengali TTS API
 
+[![CI](https://github.com/saminCSE/indicf5-tts-api/actions/workflows/ci.yml/badge.svg)](https://github.com/saminCSE/indicf5-tts-api/actions/workflows/ci.yml)
+
 Production-minded backend service around the [ai4bharat/IndicF5](https://huggingface.co/ai4bharat/IndicF5) text-to-speech model: submit Bengali text, get back playable audio — built to stay responsive when many users hit a slow, GPU-bound model at once.
 
 **Stack:** NestJS 11 (TypeScript, on Express) · MongoDB (Mongoose + GridFS) · Redis (BullMQ) · Python FastAPI model server · Jest + Supertest
@@ -160,11 +162,11 @@ Interactive docs at **`/docs`** (Swagger UI, click-to-run). Summary:
 | `GET` | `/v1/jobs` | 🔑 | Your jobs, newest first, paginated |
 | `GET` | `/v1/jobs/:id` | 🔑 | Job status/detail |
 | `GET` | `/v1/jobs/:id/audio` | 🔑 | Download WAV (`409` until completed) |
-| `GET` | `/v1/health` | — | Liveness + Mongo state |
+| `GET` | `/v1/health` | — | Liveness + Mongo & Redis state (`degraded` if either is down); exempt from auth and rate limiting — monitoring must never be throttled |
 
 **One envelope everywhere:** `{ success, statusCode, message, data, meta? }`; errors: `{ success: false, statusCode, message, error }`.
 
-**Unhappy paths, deliberately mapped:** `400` invalid/unknown fields (whitelist + forbid) · `401` missing/bad key · `404` foreign or unknown job (incl. malformed ids) · `409` audio before completion / duplicate email · `413`-class via `400` on oversized text · `422` text with no Bengali characters · `429` rate limited + `Retry-After` · `503` queue saturated + `Retry-After`. Jobs that fail (model down, timeout) store the error and are visible via status — retried once with backoff first.
+**Unhappy paths, deliberately mapped:** `400` invalid/unknown fields (whitelist + forbid) · `401` missing/bad key · `404` foreign or unknown job (incl. malformed ids) · `409` audio before completion / duplicate email · `413`-class via `400` on oversized text · `422` text with no Bengali characters · `429` rate limited + `Retry-After` · `503` queue saturated + `Retry-After` · `500` if the stored audio stream fails mid-download (handled explicitly — the request gets a proper error response instead of hanging, and the server never crashes on an unhandled stream error). Jobs that fail (model down, timeout) store the error and are visible via status — retried once with backoff first.
 
 ---
 
@@ -188,11 +190,15 @@ All env vars validated at boot — missing required vars **crash on startup with
 ```bash
 cd api
 npm test          # unit (backend HTTP client vs stub server)
-npm run test:e2e  # 27 tests vs real Mongo + Redis: auth, jobs, isolation,
+npm run test:e2e  # 29 tests vs real Mongo + Redis: auth, jobs, isolation,
                   # rate limiting, backpressure — no mocks of infrastructure
 ```
 
 TDD throughout — every feature's tests were written and seen failing before implementation. E2e suites run serially (`maxWorkers: 1`): they share real infrastructure.
+
+### CI
+
+Every push and PR runs the full pipeline on GitHub Actions ([ci.yml](.github/workflows/ci.yml)): lint → build → unit → e2e, against real Mongo 7 and Redis 7 service containers — the same infrastructure the local e2e suite uses. Lint runs in check mode (no `--fix`) so formatting drift fails the build instead of being silently patched.
 
 ## 📁 Structure
 
@@ -207,6 +213,7 @@ TDD throughout — every feature's tests were written and seen failing before im
 │   ├── src/database/          # Mongoose schemas + central model service, Redis client
 │   └── test/                  # e2e suites (Supertest)
 ├── worker/                    # Python FastAPI model server (IndicF5)
+├── .github/workflows/ci.yml   # CI: lint → build → unit → e2e (Mongo+Redis services)
 └── docker-compose.yml         # api + mongo + redis (+ tts-model via --profile real)
 ```
 
@@ -223,7 +230,7 @@ TDD throughout — every feature's tests were written and seen failing before im
 
 ## 🔮 Production Roadmap (deliberately out of scope)
 
-Daily per-user char quotas (same Redis pattern, daily TTL) · SSE job events · S3 storage driver · audio retention/cleanup job · Prometheus metrics + tracing (request-id plumbing exists) · separate worker deployable · CI pipeline (GitHub Actions: lint → build → e2e with service containers).
+Daily per-user char quotas (same Redis pattern, daily TTL) · SSE job events · S3 storage driver · audio retention/cleanup job · Prometheus metrics + tracing (request-id plumbing exists) · separate worker deployable · API-key revocation endpoint (schema already supports `revokedAt`) · atomic Lua rate-limit script (current pipeline allows a bounded overshoot under extreme concurrent bursts — documented trade-off for readability).
 
 ---
 
