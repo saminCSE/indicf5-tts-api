@@ -1,6 +1,13 @@
 # 🎙️ IndicF5 Bengali TTS API
 
 [![CI](https://github.com/saminCSE/indicf5-tts-api/actions/workflows/ci.yml/badge.svg)](https://github.com/saminCSE/indicf5-tts-api/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/tests-29%20e2e%20%2B%203%20unit%20passing-brightgreen)](api/test)
+[![NestJS](https://img.shields.io/badge/NestJS%2011-E0234E?logo=nestjs&logoColor=white)](https://nestjs.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![MongoDB](https://img.shields.io/badge/MongoDB%20%2B%20GridFS-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com)
+[![Redis](https://img.shields.io/badge/Redis%20%C2%B7%20BullMQ-DC382D?logo=redis&logoColor=white)](https://bullmq.io)
+[![FastAPI](https://img.shields.io/badge/Python%20%C2%B7%20FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Docker](https://img.shields.io/badge/Docker%20Compose-2496ED?logo=docker&logoColor=white)](docker-compose.yml)
 
 Production-minded backend service around the [ai4bharat/IndicF5](https://huggingface.co/ai4bharat/IndicF5) text-to-speech model: submit Bengali text, get back playable audio — built to stay responsive when many users hit a slow, GPU-bound model at once.
 
@@ -232,6 +239,3 @@ Every push and PR runs the full pipeline on GitHub Actions ([ci.yml](.github/wor
 
 Daily per-user char quotas (same Redis pattern, daily TTL) · SSE job events · S3 storage driver · audio retention/cleanup job · Prometheus metrics + tracing (request-id plumbing exists) · separate worker deployable · API-key revocation endpoint (schema already supports `revokedAt`) · atomic Lua rate-limit script (current pipeline allows a bounded overshoot under extreme concurrent bursts — documented trade-off for readability).
 
----
-
-*Built for the As-Sunnah Foundation Senior Backend Developer assessment, July 2026.*
