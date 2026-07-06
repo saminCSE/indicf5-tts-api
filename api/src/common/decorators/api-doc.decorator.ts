@@ -13,13 +13,28 @@ const ERROR_DESCRIPTIONS: Record<number, string> = {
 };
 
 const ERROR_EXAMPLES: Record<number, { message: string; error: string }> = {
-  400: { message: 'text must be shorter than or equal to 1000 characters', error: 'Bad Request' },
+  400: {
+    message: 'text must be shorter than or equal to 1000 characters',
+    error: 'Bad Request',
+  },
   401: { message: 'Missing x-api-key header', error: 'Unauthorized' },
   404: { message: 'Job not found', error: 'Not Found' },
-  409: { message: "Audio not ready — job status is 'processing'", error: 'Conflict' },
-  422: { message: 'Text must contain Bengali characters', error: 'Unprocessable Entity' },
-  429: { message: 'Rate limit exceeded, slow down', error: 'Too Many Requests' },
-  503: { message: 'Queue is full, please retry shortly', error: 'Service Unavailable' },
+  409: {
+    message: "Audio not ready — job status is 'processing'",
+    error: 'Conflict',
+  },
+  422: {
+    message: 'Text must contain Bengali characters',
+    error: 'Unprocessable Entity',
+  },
+  429: {
+    message: 'Rate limit exceeded, slow down',
+    error: 'Too Many Requests',
+  },
+  503: {
+    message: 'Queue is full, please retry shortly',
+    error: 'Service Unavailable',
+  },
 };
 
 interface ApiDocOptions {

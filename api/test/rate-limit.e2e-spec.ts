@@ -74,17 +74,13 @@ describe('Rate limiting (e2e)', () => {
   });
 
   it('exposes X-RateLimit headers that count down', async () => {
-    const first = await request(server)
-      .get('/v1/me')
-      .set('x-api-key', keyB);
-    const second = await request(server)
-      .get('/v1/me')
-      .set('x-api-key', keyB);
+    const first = await request(server).get('/v1/me').set('x-api-key', keyB);
+    const second = await request(server).get('/v1/me').set('x-api-key', keyB);
 
     expect(first.headers['x-ratelimit-limit']).toBe('3');
-    expect(
-      Number(second.headers['x-ratelimit-remaining']),
-    ).toBeLessThan(Number(first.headers['x-ratelimit-remaining']));
+    expect(Number(second.headers['x-ratelimit-remaining'])).toBeLessThan(
+      Number(first.headers['x-ratelimit-remaining']),
+    );
   });
 
   it('never throttles the health endpoint', async () => {
