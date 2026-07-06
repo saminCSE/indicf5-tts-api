@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Logger,
   Param,
   Post,
   Query,
@@ -20,6 +21,8 @@ import { JobsService } from './jobs.service';
 @ApiTags('tts')
 @Controller()
 export class JobsController {
+  private readonly logger = new Logger(JobsController.name);
+
   constructor(private readonly jobsService: JobsService) {}
 
   @Post('tts')
@@ -111,6 +114,21 @@ export class JobsController {
     res.set({
       'Content-Type': 'audio/wav',
       'Content-Disposition': `attachment; filename="${filename}"`,
+    });
+    stream.on('error', (err) => {
+      this.logger.error(`Audio stream failed for job ${id}: ${err.message}`);
+      if (res.headersSent) {
+        res.destroy(err);
+      } else {
+        res.removeHeader('Content-Disposition');
+        res.type('json');
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          success: false,
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Failed to stream audio',
+          error: 'Internal Server Error',
+        });
+      }
     });
     stream.pipe(res);
   }

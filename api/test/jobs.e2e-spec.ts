@@ -201,6 +201,23 @@ describe('TTS Jobs (e2e)', () => {
         .expect(404);
     });
 
+    it('returns 500 without crashing when the stored audio is missing', async () => {
+      const jobId = await submitJob(keyA);
+      await waitForStatus(keyA, jobId, 'completed');
+
+      await connection.collection('audio.files').deleteMany({});
+      await connection.collection('audio.chunks').deleteMany({});
+
+      const res = await request(server)
+        .get(`/v1/jobs/${jobId}/audio`)
+        .set('x-api-key', keyA)
+        .expect(500);
+
+      expect(res.body.success).toBe(false);
+
+      await request(server).get('/v1/health').expect(200);
+    });
+
     it('paginates with meta', async () => {
       await submitJob(keyA);
       await submitJob(keyA);
