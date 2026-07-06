@@ -1,0 +1,9 @@
+fastapi==0.115.*
+uvicorn[standard]==0.34.*
+soundfile==0.13.*
+numpy<2.0
+huggingface_hub
+transformers==4.*
+torch>=2.2
+pyarrow<15
+torchcodec

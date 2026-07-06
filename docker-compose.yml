@@ -1,8 +1,26 @@
 services:
+  api:
+    build: ./api
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      - PORT=3000
+      - MONGO_URI=mongodb://mongo:27017/indicf5-tts
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - TTS_BACKEND=${TTS_BACKEND:-mock}
+      - TTS_SERVICE_URL=http://tts-model:8000
+      - HF_TOKEN=${HF_TOKEN:-}
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
   mongo:
     image: mongo:7
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27018:27017"
     volumes:
       - mongo-data:/data/db
     healthcheck:
@@ -14,12 +32,28 @@ services:
   redis:
     image: redis:7
     ports:
-      - "6380:6379"
+      - "127.0.0.1:6380:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5
 
+  tts-model:
+    build: ./worker
+    profiles: ["real"]
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+    volumes:
+      - hf-cache:/root/.cache/huggingface
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
 volumes:
   mongo-data:
+  hf-cache:
