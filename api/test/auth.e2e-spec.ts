@@ -116,5 +116,15 @@ describe('Auth (e2e)', () => {
     it('health stays public', async () => {
       await request(app.getHttpServer()).get('/v1/health').expect(200);
     });
+
+    it('health reports mongo and redis connectivity', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/v1/health')
+        .expect(200);
+
+      expect(res.body.data.mongo).toBe('connected');
+      expect(res.body.data.redis).toBe('connected');
+      expect(res.body.data.status).toBe('ok');
+    });
   });
 });
